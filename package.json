@@ -1,0 +1,26 @@
+{
+  "name": "punchlist",
+  "version": "1.0.0",
+  "description": "Punch List JQueryLess",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabwagner/punchListJQueryLess.git"
+  },
+  "keywords": [
+    "punchlist",
+    "html"
+  ],
+  "author": "gwagner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gabwagner/punchListJQueryLess/issues"
+  },
+  "homepage": "https://github.com/gabwagner/punchListJQueryLess#readme",
+  "devDependencies": {
+    "express": "^4.16.4"
+  }
+}
