@@ -1,3 +1,5 @@
+// DOM Ready 
+// From https://code.google.com/archive/p/domready/
 ;(function(){
 
     var DomReady = window.DomReady = {};
@@ -145,23 +147,29 @@
 	
 })();
 
+// Utils functions
 var Utils = (function(){
 
- return {
-   
-    map: function(object, callback) {
-      var result;
-      if(Array.isArray(object)) {
-        result = object.map(callback);
-      } else if(typeof object === 'object' && object) {
-        result = [];
-        for(var index in object) {
-          result.push(callback(object[index], index, object));
-        }
+return {
+  
+  // Map function to replace $.map
+  map: function(object, callback) {
+    var result;
+    // If the object is an array it will call directly to the map function
+    if(Array.isArray(object)) {
+      result = object.map(callback);
+    } else if(typeof object === 'object' && object) {
+      // If it's an object it will take the first property as index 
+      // and the content as the object to map
+      result = [];
+      for(var index in object) {
+        result.push(callback(object[index], index, object));
       }
-      return result;
-    },
-    extend: function () {
+    }
+    return result;
+  },
+  // Extend function to replace $.extend
+  extend: function () {
 
     // Variables
     var extended = {};
@@ -198,7 +206,7 @@ var Utils = (function(){
     return extended;
 
   }
- }
+}
 
 }());
 
