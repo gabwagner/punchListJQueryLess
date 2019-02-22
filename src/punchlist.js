@@ -296,6 +296,30 @@
   /**
   * Function that toggle comments for a specific item
   * @private
+  * @param {HtmlElemet} HtmlElement that is going to be removed
+  */ 
+  var animateRemove = function(item) {
+    var height = item.offsetHeight;
+    var animation = item.animate(
+    [
+      {
+        height: height + 'px'
+      },    
+      {
+        height:'0px',
+      },
+    ],
+      {
+        duration:300
+      }
+    );
+    animation.onfinish = function(event) {
+      item.remove();
+    };
+  }    
+  /**
+  * Function that toggle comments for a specific item
+  * @private
   * @param {HtmlElemet} HtmlElement that is the target of the click   
   */
   var toggleComments = function(item) {
@@ -318,12 +342,14 @@
     if(settings.removeItemHandler) {
       // Call to the handler. If return false, it won't remove the item
       if(settings.removeItemHandler(punchItem.getAttribute('id'), JSON.parse(punchItem.getAttribute('data-item')))) {
-        punchItem.remove();
+        animateRemove(punchItem);
+        //punchItem.remove();
       } else {
         console.warn('[PunchList][setItemFunctionality]Item could not be removed - check handler removeItemHandler');
       }
     } else {
-      punchItem.remove();
+      animateRemove(punchItem);
+      //punchItem.remove();
     }    
   };   
   /**

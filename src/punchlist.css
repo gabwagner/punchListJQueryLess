@@ -182,14 +182,34 @@
   color:#717171;
 }
 
+.punchlist-item-container {
+  overflow:hidden;
+}
+
 :checked + .punchlist-item-label-text .fa-check:before { 
   font-size:20px;
   color:#0eb0b7;        
 }
 
+@keyframes strike {
+  from { text-decoration-color: transparent; }
+  to { text-decoration-color: #cd4400; }
+}
+
+@keyframes strike-out {
+  from { text-decoration-color: #cd4400; }
+  to { text-decoration-color: transparent; }
+}
+
+:.punchlist-item-label-text .punchlist-item-label-text-line {       
+  text-decoration: line-through;
+  animation: strike-out 900ms linear;
+}
+
 :checked + .punchlist-item-label-text .punchlist-item-label-text-line {       
-  text-decoration:line-through;
-  color:#cd4400;
+  text-decoration: line-through;
+  animation: strike 1s ease-in;
+  text-decoration-color: #cd4400;
 }
 
 :checked + .punchlist-item-label-text  .punchlist-item-label-text-data {       
