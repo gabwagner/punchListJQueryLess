@@ -86,7 +86,7 @@
   // Default settings
   var defaults = {
     // Title of the Punch List 
-    title: "Punch List",
+    title: 'Punch List',
     // Width of the container. If not set, will expand to the size of the parent 
     width: null,
     // RestFULL API CALL. Response must be JSON 
@@ -126,7 +126,7 @@
     elem.classList.add('punchlist-container');
     var htmlPunchListContainer = [{title: settings.title}].map(templates.punchListContainerTemplate).join('');
     if(settings.width) {
-      elem.style.width = settings.width +"px";
+      elem.style.width = settings.width + 'px';
     }
     elem.innerHTML = htmlPunchListContainer;
   };    
@@ -148,7 +148,7 @@
           // Draw Tasks into the punchList
           punchList.drawItems(standarizeData);          
         })
-        .catch(error => console.error("{PunchList][populatePunchList] Error while retrieving data. Status:'" + error + "'"));   
+        .catch(error => console.error('[PunchList][populatePunchList] Error while retrieving data. Status:"' + error + '"'));   
       } 
   };
   /**
@@ -188,31 +188,31 @@
   *   var jsonTransform = {
   *     data: [
   *     {
-  *       field: "id",
-  *       name: "id"
+  *       field: 'id',
+  *       name: 'id'
   *     }],
-  *     task: "item",
-  *     checked: "index",
+  *     task: 'item',
+  *     checked: 'index',
   *     tags: [ 
   *       { 
-  *         field:"project",
-  *         name:"Project",
+  *         field:'project',
+  *         name:'Project',
   *         convert: null,
   *       }, 
   *       {
-  *         field:"datetime",
-  *         name:"Date",
-  *         convert: "date", 
+  *         field:'datetime',
+  *         name:'Date',
+  *         convert: 'date', 
   *       }
   *     ],
   *     comments: { 
-  *       listField: "comments", 
-  *       field:"comment",
+  *       listField: 'comments', 
+  *       field:'comment',
   *       deletable: false,
   *       tags: [
   *         {
-  *           field: "user",
-  *           name: "User",
+  *           field: 'user',
+  *           name: 'User',
   *           convert: null,
   *         }
   *       ]
@@ -284,7 +284,7 @@
     // Check the convertion of the tag.
     // Only date convertion is set
     switch(tag.convert) {
-      case "date":
+      case 'date':
         newTag.value = new Date(item[tag.field]).toLocaleString();
         break;
       default:
@@ -320,7 +320,7 @@
       if(settings.removeItemHandler(punchItem.getAttribute('id'), JSON.parse(punchItem.getAttribute('data-item')))) {
         punchItem.remove();
       } else {
-        console.warn("[PunchList][setItemFunctionality]Item could not be removed - check handler removeItemHandler");
+        console.warn('[PunchList][setItemFunctionality]Item could not be removed - check handler removeItemHandler');
       }
     } else {
       punchItem.remove();
@@ -338,7 +338,7 @@
       var punchItem = item.closest('.' + punchListItemContainer);
       // Call to the handler. If return false. It will undo the action
       if(!settings.checkedItemHandler(punchItem.getAttribute('id'), JSON.parse(punchItem.getAttribute('data-item')), item.checked)) {
-        console.warn("[PunchList][setItemFunctionality] Item could not change state - check handler checkedItemHandler");
+        console.warn('[PunchList][setItemFunctionality] Item could not change state - check handler checkedItemHandler');
         item.checked = !item.checked;
       }
     }
@@ -365,7 +365,7 @@
     var input = document.createElement('input');
     input.type = 'text';
     input.id = 'punch-item';
-    input.style.width = "100%";
+    input.style.width = '100%';
     // Add the blur event to calll when losing focus
     input.addEventListener('blur', addEventHandler, false);
     //  Add the input to parent element
@@ -389,7 +389,7 @@
       // If the addITemHandler is set 
       // Check before with the add handler. If can not create will delete the new item.
       if(settings.addItemHandler&&!settings.addItemHandler(punchItem.getAttribute('id'), newTask)) {
-        console.warn("[PunchList][addNewItemAction] Item could not be added - check handler addItemHandler");
+        console.warn('[PunchList][addNewItemAction] Item could not be added - check handler addItemHandler');
         punchItem.remove();
       } else {
         item.parentNode.innerHTML = newTask;
@@ -420,7 +420,7 @@
     var input = document.createElement('input');
     input.type = 'text';
     input.id = 'punch-item-comment';
-    input.style.width = "100%";
+    input.style.width = '100%';
     // Search for the element where the input should be added
     var toAppendInput = newCommentDOM.querySelector('.punchlist-comment-text');
     toAppendInput.append(input);
@@ -468,7 +468,7 @@
   var clickEventHandler = function (event) {
     // Get custom data-action to know the origin of the event
     // If not set the event will not trigger anything
-    var action = event.target.getAttribute("data-action");
+    var action = event.target.getAttribute('data-action');
     switch(action) {
       // When the action came from the check box
       case 'punchlist-item-action-checked':
@@ -502,7 +502,7 @@
   * @param {Event} Event Trigger       
   */
   var addEventHandler = function (event) {
-    var id = event.target.getAttribute("id");
+    var id = event.target.getAttribute('id');
     // get the id attribute of the target event. To check is one of the creation inputs   
     switch(id) {
       case 'punch-item':
@@ -524,7 +524,7 @@
     // 13 is enter
     if (key === 13) { 
       // get the id attribute of the target event. To check is one of the creation inputs
-      var id = eve1nt.target.getAttribute("id");
+      var id = event.target.getAttribute('id');
       switch(id) {
         case 'punch-item':
           // Remove Listener to avoid problem with none existing object because it will delete de input
@@ -584,7 +584,7 @@
       // Populate the punch list
       populatePunchList();
     } else {
-      console.error("[PunchList][init] Main container not found. Selector: '" + settings.container + "'");
+      console.error('[PunchList][init] Main container not found. Selector: "' + settings.container + '"');
       punchList.destroy();
     } 
   };
@@ -612,7 +612,7 @@
   * Example:
   * 
   * var tasks = [ {
-  *     task:"Task Description",
+  *     task:'Task Description',
   *     checked:false,
   *     data: [ {
   *       name: 'id',
