@@ -3,12 +3,11 @@
   <head>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/punchlist.css">
-    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="js/punchlist.js"></script>
+    <script type="text/javascript" src="js/punchlist.all.min.js"></script>
   </head>
   <body>
     <script>
-    $( document ).ready(function() {
+    DomReady.ready(function() {
       var tasks = [{
         task:"Task Description",
         checked:false,
@@ -90,9 +89,10 @@
         addItemHandler: onAdd,
         removeItemHandler: onDelete,
         checkedItemHandler: onChecked,
-
+        container: "#punchlist-container",
       };
-      $('#punchlist-container').punchList(options).drawItems(tasks);
+      punchList.init(options);
+      punchList.drawItems(tasks);
     });
     </script>
     <div id="punchlist-container"></div>

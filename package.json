@@ -2,9 +2,11 @@
   "name": "punchlist",
   "version": "1.0.0",
   "description": "Punch List JQueryLess",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run buildMin && npm run buildDist && npm run buildExample",
+    "buildMin": "webpack",
+    "buildExample": "copyfiles -u 1 dist/*.js example/js && copyfiles -u 1 dist/*.css example/css",
+    "buildDist": "copyfiles -u 1 src/* dist"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,9 @@
   },
   "homepage": "https://github.com/gabwagner/punchListJQueryLess#readme",
   "devDependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "copyfiles": "^2.1.0"
   }
 }
