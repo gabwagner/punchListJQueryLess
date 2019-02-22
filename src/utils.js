@@ -148,6 +148,19 @@
 var Utils = (function(){
 
  return {
+   
+    map: function(object, callback) {
+      var result;
+      if(Array.isArray(object)) {
+        result = object.map(callback);
+      } else if(typeof object === 'object' && object) {
+        result = [];
+        for(var index in object) {
+          result.push(callback(object[index], index, object));
+        }
+      }
+      return result;
+    },
     extend: function () {
 
     // Variables
