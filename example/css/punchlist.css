@@ -1,5 +1,5 @@
 .punchlist-container * {
-  box-sizing:border-box;
+   box-sizing:border-box;
 }
 
 .punchlist-container {
@@ -10,6 +10,7 @@
   background-color: #ebebeb;
   min-width: 300px;
   border-radius: 5px;
+  position:relative;
 }
 
 .punchlist-title h1 {
@@ -25,7 +26,35 @@
   color:#0eb0b7;
 }
 
-#punchlist-items-container {
+.punchlist-working {
+  position:absolute;
+  width:100%;
+  height:100%;
+  z-index: 1;
+  background-color:black;
+  opacity:0.4;
+}
+
+.punchlist-working.hidden {
+  display:none;
+}
+
+.punchlist-loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.punchlist-items-container {
   margin:0 auto 0 auto;
   padding:15px;
   background:white;
@@ -35,7 +64,7 @@
   border-radius: 5px;  
 }
 
-#punchlist-items {
+.punchlist-items {
   background-color: #ffffff;
   border-radius: 5px;
 }
@@ -226,7 +255,7 @@
   border-bottom: 1px solid #ebebeb;  
 }
 
-.punchlist-comments.hidden .punchlist-comment:not(:first-child) {
+.punch-list-comments.hidden .punchlist-comment:not(:first-child) {
   display:none;
 }
 
@@ -263,7 +292,7 @@
   font-size:14px;
 }
 /* Add Item */
-#punchlist-item-action-add {
+.punchlist-item-action-add {
   padding:25px 0 0 0;
   font-size:14px;
   font-weight:200;
@@ -272,10 +301,10 @@
   cursor:pointer;
 }
 
-#punchlist-item-action-add:hover {
+.punchlist-item-action-add:hover {
   color:#6bc569;
 }
 
-#punchlist-item-action-add .fa-plus{
+.punchlist-item-action-add .fa-plus{
   font-size:14px;
 }
