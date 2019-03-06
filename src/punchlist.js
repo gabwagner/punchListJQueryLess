@@ -111,11 +111,11 @@
     // Width of the container. If not set, will expand to the size of the parent 
     width: null,
     // RestFULL API CALL to Project. Response must be JSON 
-    projectAPICall: 'api/project/',    
+    projectAPICall: null,    
     // RestFULL API CALL to Item. Response must be JSON 
-    itemAPICall: 'api/item/',    
+    itemAPICall: null,    
     // RestFULL API CALL to Comment. Response must be JSON 
-    commentAPICall: 'api/comment/',
+    commentAPICall: null,
     // List of initial projects
     projects: null,
   };
