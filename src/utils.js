@@ -168,6 +168,18 @@ return {
     }
     return result;
   },
+  // Map function to replace $.map
+  mapWithIndex: function(index, object, callback) {
+    var result;
+    // If the object is an array it will call directly to the map function
+    if(typeof object === 'object' && object) {
+      // If it's an object it will take the first property as index 
+      // and the content as the object to map
+      result = [];
+      result.push(callback(object, index, object));
+    }
+    return result;
+  },  
   // Extend function to replace $.extend
   extend: function () {
 
@@ -205,7 +217,59 @@ return {
 
     return extended;
 
-  }
+  },
+  // Extend function to replace $.extend
+  apiCall: function (method, url, data, callBack, errorCallBack, token) {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', 'Bearer ' + token);    
+    headers.append("Accept","application/json, text-plain, */*");
+    headers.append("X-Requested-With","XMLHttpRequest");
+
+    var status;
+    var isOk;
+    
+    var fetchOptions = {
+      method: method, 
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit  
+      headers: headers, 
+      redirect: "follow", // manual, *follow, error
+      referrer: "no-referrer", // no-referrer, *client
+    };
+    
+    if(method!="GET"&&data) {
+      fetchOptions.body =JSON.stringify(data);
+    }
+    
+    return fetch(url, fetchOptions)
+    .then(response =>  {
+      status = response.status;
+      isOk = response.ok;
+      return response.json();
+    })
+    .then(responseJson => {
+      if(isOk) {
+        callBack(responseJson);
+      } else { 
+        var error = new Error('Punch List Error');
+        error.code = status;
+        error.json = responseJson;
+        throw error;
+      }
+    })  
+    .catch( error => {
+      if(error.json) {
+        information = error.json;
+        errorCallBack(information);        
+      } else {
+        throw error;
+      }
+    });
+    
+    
+  }, 
 }
 }());
 
