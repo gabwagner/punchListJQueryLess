@@ -1,6 +1,6 @@
 {
   "name": "punchlist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Punch List JQueryLess",
   "scripts": {
     "build": "npm run buildMin && npm run buildDist && npm run buildExample",
