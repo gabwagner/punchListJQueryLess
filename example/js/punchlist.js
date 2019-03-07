@@ -10,8 +10,6 @@
   // More strict in JS implementation. Fail Fast
   'use strict';
   // USer id Temporal for testing porpouse
-  var userId = 1;
-  // USer id Temporal for testing porpouse
   var projectId;  
   // DomParser to create new items from String
   var domParser = new DOMParser();
@@ -118,6 +116,8 @@
     commentAPICall: null,
     // List of initial projects
     projects: null,
+    // User Id 
+    userId: 1,
   };
   //
   // Methods
@@ -224,7 +224,7 @@
     var result = {};
     result.id = data.id;
     result.comment = data.text;
-    if(data.user.id==userId) {
+    if(data.user.id==settings.userId) {
       result.deletable = true;
     }
     result.tags = [{'name':'User','value':data.user.name},{'name':'Company','value':data.user.company},{'name':'Date','value':new Date(data.created_at).toLocaleString()}];    
@@ -386,7 +386,7 @@
           workingEnd();
         }    
         
-        var data = {title:newTask,user_id:userId, project_id: projectId, punched:false};
+        var data = {title:newTask,user_id:settings.userId, project_id: projectId, punched:false};
 
         Utils.apiCall('POST', settings.itemAPICall, data, callBack, errorCallBack, settings.apiToken );       
       } else {
@@ -460,7 +460,7 @@
           workingEnd();
         }    
         
-        var data = {text:newTaskComment,user_id:userId, item_id: id};
+        var data = {text:newTaskComment,user_id:settings.userId, item_id: id};
         
         Utils.apiCall('POST', settings.commentAPICall, data, callBack, errorCallBack, settings.apiToken );       
       } else {
@@ -628,11 +628,6 @@
   * @param {Object} options User settings
   */
   punchList.init = function (options) {
-    // Temporal to switch users 
-    var urlParams = new URLSearchParams(location.search);
-    if(urlParams.has('user_id')) {
-      userId = urlParams.get('user_id');
-    }
     // feature test
     if ( !supports ) return;
     // Destroy any existing initializations
