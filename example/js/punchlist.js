@@ -180,7 +180,7 @@
         
       }
 
-      Utils.apiCall('GET', settings.projectAPICall + projectId, null, callBack, errorCallBack, settings.apiToken );
+      Utils.apiCall('GET', settings.projectAPICall + '/' + projectId, null, callBack, errorCallBack, settings.apiToken );
     } 
   };
   /**
@@ -283,7 +283,7 @@
   	    
       };
 
-      Utils.apiCall('DELETE', settings.itemAPICall + id, null, callBack, errorCallBack, settings.apiToken ); 
+      Utils.apiCall('DELETE', settings.itemAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken ); 
       
     } else {
       animateRemove(punchItem);
@@ -316,7 +316,7 @@
 
       var data = {punched:item.checked};
       
-      Utils.apiCall('PUT', settings.itemAPICall + id, data, callBack, errorCallBack, settings.apiToken );       
+      Utils.apiCall('PUT', settings.itemAPICall + '/' + id, data, callBack, errorCallBack, settings.apiToken );       
     }
   }; 
   
@@ -495,7 +495,7 @@
         workingEnd();
       }         
       
-      Utils.apiCall('DELETE', settings.commentAPICall + id, null, callBack, errorCallBack, settings.apiToken );       
+      Utils.apiCall('DELETE', settings.commentAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken );       
     } else {      
       punchItemComment.remove();
     }
