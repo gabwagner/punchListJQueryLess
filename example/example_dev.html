@@ -6,80 +6,22 @@
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/punchlist.js"></script>
   </head>
-  <body>
+   <body>
     <script>
     DomReady.ready(function() {
-      var jsonTransform = {
-        data: [
-        {
-          field: "id",
-          name: "id"
-        }],
-        task: "item",
-        checked: "index",
-        tags: [ 
-          { 
-            field:"project",
-            name:"Project",
-            convert: null,
-          },
-          {
-            field:"company",
-            name:"Company",
-            convert: null,
-          }, 
-          {
-            field: "user",
-            name: "User",
-            convert: null,
-          }, 
-          {
-            field:"datetime",
-            name:"Date",
-            convert: "date", 
-          }
-        ],
-        comments: { 
-          listField: "comments", 
-          field:"comment",
-          deletable: false,
-          tags: [
-            {
-              field: "user",
-              name: "User",
-              convert: null,
-            }, 
-            {
-              field:"datetime",
-              name:"Date",
-              convert: "date", 
-            }
-          ]
-        }
-      }
+
+      var projects = [
+      {id:1, name:'Project 1'},
+      {id:2, name:'Project 2'},
+      ];
+    
+      var apiToken = '{{ $token }}';
       
-      
-      function onAdd(itemId, val) {
-        console.log(itemId + " - " + val);
-        // Can set values in newHtmlItem.data('item') ... that will be send in the other calls
-        return true;
-      }
-      function onDelete(itemId, itemData) {
-        console.log(itemId + " - " + JSON.stringify(itemData));
-        return true;
-      }      
-      function onChecked(itemId, itemData, checked) {
-        console.log(itemId + " - " + JSON.stringify(itemData) + " - " + checked);
-        return true;
-      }
       var options = {
         width: 600,
-        fillDataCall: "json/response.json",
-        fillDataTransform: jsonTransform,
-        addItemHandler: onAdd,
-        removeItemHandler: onDelete,
-        checkedItemHandler: onChecked,
+        projects: projects,
         container: "#punchlist-container",
+        apiToken: apiToken,
       };
       punchList.init(options);
     });

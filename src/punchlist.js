@@ -38,7 +38,7 @@
   // Templates used on Punch List
   const templates = {
     punchListLoading : `<div class="punchlist-loader"></div>`,
-    punchlistProjectTemplate : ({ id, name }) => `<option value="${id}">${name}</option>`,
+    punchlistProjectTemplate : ({ id, name, selected }) => `<option value="${id}" ${selected}>${name}</option>`,
     // Template of the container 
     punchListContainerTemplate: ({ title, projects }) => `<div id="${selectorsIds.punchListWorking}" class="punchlist-working hidden"></div><div class="punchlist-title">
     <h1><i class="fa fa-check"></i>${title}</h1>
@@ -118,6 +118,8 @@
     projects: null,
     // User Id 
     userId: 1,
+    // Project Id
+    projectId: null,
   };
   //
   // Methods
@@ -137,8 +139,20 @@
   * @param {HtmlElemet} Container Element
   */
   var createPunchListContainer = function(elem) {
+
+  var projects = settings.projects.map(function(el) {
+      var o = Object.assign({}, el);
+      if(o.id == settings.projectId) {
+        o.selected = 'selected';
+      } else {
+        o.selected = '';
+      }
+      return o;
+    });
+
     elem.classList.add('punchlist-container');
-    var htmlPunchListContainer = [{ title: settings.title, projects: settings.projects }].map(templates.punchListContainerTemplate).join('');
+    
+    var htmlPunchListContainer = [{ title: settings.title, projects: projects }].map(templates.punchListContainerTemplate).join('');
     if(settings.width) {
       elem.style.width = settings.width + 'px';
     }
@@ -390,10 +404,11 @@
 
         Utils.apiCall('POST', settings.itemAPICall, data, callBack, errorCallBack, settings.apiToken );       
       } else {
-        var item = {id: new Date.getTime(), task:newTask,comments:[], tags:[], data:[]};
+        var date = new Date();
+        var item = [{id: date.getTime(), task:newTask,comments:[], tags:[], data:[]}];
         var newItemHmltring = Utils.map(item, templates.punchListItemTemplate).join('');
-        removeItem.remove();
-        punchListItems.innerHTML = punchlistItems.innerHTML + newItemHmltring;        
+        punchItemToRemove.remove();
+        punchListItemsCache.innerHTML = punchListItemsCache.innerHTML + newItemHmltring;        
       }
     } else {
       punchItemToRemove.remove();
@@ -722,9 +737,7 @@
     if(tasks.length>0) {
       var itemsToShow = tasks.map(templates.punchListItemTemplate).join('');
       punchListItems.innerHTML = itemsToShow;
-    } else {
-      punchListItems.innerHTML = "No Items Found";
-    }
+    } 
   };
 
   return punchList;
