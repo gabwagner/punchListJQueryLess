@@ -737,7 +737,9 @@
     if(tasks.length>0) {
       var itemsToShow = tasks.map(templates.punchListItemTemplate).join('');
       punchListItems.innerHTML = itemsToShow;
-    } 
+    } else {
+      punchListItems.innerHTML = '';
+    }
   };
 
   return punchList;
