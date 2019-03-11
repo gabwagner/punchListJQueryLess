@@ -9,6 +9,7 @@
     <script>
     DomReady.ready(function() {
       var tasks = [{
+        id:1,
         task:"Task Description",
         checked:false,
         data: [ {
@@ -39,6 +40,7 @@
           ] },
         ] ,
       }, {
+        id:2,
         task:"Task 2",
         checked:true,
         data: [ {
@@ -67,30 +69,35 @@
           value: 'Yesterday2',
           },
           ] },
+          {
+          comment: 'This is another comment',
+          deletable: false,
+          tags: [ {
+          name: 'User',
+          value: 'Semi-Boss',
+          },
+          {
+          name: 'Date',
+          value: 'Yesterday2',
+          },
+          ] },
         ] ,
       },
       ];
       
-      function onAdd(itemId, val) {
-        console.log(itemId + " - " + val);
-        // Can set values in newHtmlItem.data('item') ... that will be send in the other calls
-        return true;
-      }
-      function onDelete(itemId, itemData) {
-        console.log(itemId + " - " + JSON.stringify(itemData));
-        return true;
-      }      
-      function onChecked(itemId, itemData, checked) {
-        console.log(itemId + " - " + JSON.stringify(itemData) + " - " + checked);
-        return true;
-      }
+      var projects = [
+      {id:1, name:'Project 1'},
+      {id:2, name:'Project 2'},
+      ];
+    
+      var apiToken = '{{ $token }}';
+      
       var options = {
-        width: 600,
-        addItemHandler: onAdd,
-        removeItemHandler: onDelete,
-        checkedItemHandler: onChecked,
+        projects: projects,
         container: "#punchlist-container",
+        apiToken: apiToken,
       };
+
       punchList.init(options);
       punchList.drawItems(tasks);
     });

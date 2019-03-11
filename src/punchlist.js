@@ -21,6 +21,8 @@
   var punchListItems;
   // Working cache 
   var working;
+  // Modal Cache
+  var modal;
   
   const newIdItem = 'new';
 
@@ -33,6 +35,11 @@
       punchListCommentText: 'punch-comment-text-',
       punchListProjects: 'punch-projects',
       punchListWorking: 'punch-working',
+      punchListModal: 'punch-modal',
+      punchListModalTitle: 'punch-modal-title',
+      punchListModalText: 'punch-modal-text',
+      punchListModalActionOk: 'punch-modal-action-ok',
+      punchListModalActionCancel: 'punch-modal-action-cancel',
   };
   
   // Templates used on Punch List
@@ -40,7 +47,18 @@
     punchListLoading : `<div class="punchlist-loader"></div>`,
     punchlistProjectTemplate : ({ id, name, selected }) => `<option value="${id}" ${selected}>${name}</option>`,
     // Template of the container 
-    punchListContainerTemplate: ({ title, projects }) => `<div id="${selectorsIds.punchListWorking}" class="punchlist-working hidden"></div><div class="punchlist-title">
+    punchListContainerTemplate: ({ title, projects }) => `
+    <div id="${selectorsIds.punchListWorking}" class="punchlist-working hidden">
+      <div class="punchlist-modal hidden" id="${selectorsIds.punchListModal}">
+        <div class="title" id="${selectorsIds.punchListModalTitle}">Confirm</div>
+        <div class="text" id="${selectorsIds.punchListModalText}"></div>
+        <div class="actions">
+          <button id="${selectorsIds.punchListModalActionOk}" class="button confirm">Confirm</button>
+          <button id="${selectorsIds.punchListModalActionCancel}" class="button cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="punchlist-title">
     <h1><i class="fa fa-check"></i>${title}</h1>
     </div>
     <div class="punchlist-projects"> Project: 
@@ -120,18 +138,61 @@
     userId: 1,
     // Project Id
     projectId: null,
+    // Set confirmation when setting a task as done
+    confirmCheck: true,
+    // Set confirmation when setting a task as not done    
+    confirmUnCheck: true,
+    // Set confirmation before deleting an item
+    confirmDeleteItem: true,
   };
   //
   // Methods
   //
+  /**
+  * Set Punch List to working status. It will wait until an action is complete.
+  * No other action can be done when it's on working state
+  * @private
+  */  
   var workingStart = function() {
       disabled = true;
       working.classList.remove('hidden');    
   }
+  /**
+  * Set Punch List to normal status. All action are available.
+  * @private
+  */  
   var workingEnd = function() {
       disabled = false;
       working.classList.add('hidden');    
   }
+  /**
+  * Call modal window to confirm an action
+  * @private
+  */  
+  var callModalConfirm = function(text, confirmAction, cancelAction) {
+    var modalText = modal.querySelector('#' + selectorsIds.punchListModalText);
+    var modalActionOk = modal.querySelector('#' + selectorsIds.punchListModalActionOk);
+    var modalActionCancel = modal.querySelector('#' + selectorsIds.punchListModalActionCancel);    
+    modalText.innerHTML = text;
+    modal.classList.remove('hidden');
+    workingStart();
+    modalActionOk.onclick = function() {
+      modal.classList.add('hidden');
+      workingEnd();
+      if(confirmAction) {
+        confirmAction();
+      }
+    }
+
+    modalActionCancel.onclick = function() {
+      modal.classList.add('hidden');
+      workingEnd();
+      if(cancelAction) {
+        cancelAction();
+      }
+    }    
+      
+  }  
   /**
   * Creates the primary container where the list will be added.
   * Also set the css class for it
@@ -139,8 +200,8 @@
   * @param {HtmlElemet} Container Element
   */
   var createPunchListContainer = function(elem) {
-
-  var projects = settings.projects.map(function(el) {
+    // Set selected to current project
+    var projects = settings.projects.map(function(el) {
       var o = Object.assign({}, el);
       if(o.id == settings.projectId) {
         o.selected = 'selected';
@@ -279,29 +340,41 @@
   var removeItem = function(item) {
     // Search for parent element
     var id = item.getAttribute("data-id");
+    var punchItem = punchListItems.querySelector('#' + selectorsIds.punchListItem + id);
+
+    var confirmAction = function() {
+      animateRemove(punchItem);
+    };
+
+    var cancelAction = null;
 
     if(settings.itemAPICall) {
       
-      workingStart();
-      
-      var callBack = function(data) {
-        workingEnd();
-        var punchItem = punchListItems.querySelector('#' + selectorsIds.punchListItem + id);        
-        animateRemove(punchItem);
-      };
-            
-      var errorCallBack = function (data) {
+      confirmAction = function() {
+        workingStart();
         
-        console.error(data);      
-  	    workingEnd();
-  	    
-      };
+        var callBack = function(data) {
+          workingEnd();
+                  
+          animateRemove(punchItem);
+        };
+              
+        var errorCallBack = function (data) {
+          
+          console.error(data);      
+          workingEnd();
+          
+        };
 
-      Utils.apiCall('DELETE', settings.itemAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken ); 
-      
+        Utils.apiCall('DELETE', settings.itemAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken ); 
+      }      
+    }
+
+    if(settings.confirmDeleteItem) {
+      callModalConfirm('Do you want to remove task?', confirmAction, cancelAction);
     } else {
-      animateRemove(punchItem);
-    }    
+      confirmAction();
+    } 
   };   
   /**
   * Function that check item
@@ -312,26 +385,38 @@
     // Check if the handler for check is set, if not set it will continue
     var id = item.getAttribute("data-id");
 
-    if(settings.itemAPICall) {    
-      
-      workingStart();
-      
-      var callBack = function(data) {
-        var task = standardizeItem(data);
-        item.checked = task.punched;
-        workingEnd();        
-      };
+    var cancelAction = function() {
+      item.checked = !item.checked;
+    };
 
-      var errorCallBack = function (data) {
-        console.error(data);      
-        item.checked = !item.checked;
-        workingEnd();
-      };
+    var confirmAction = function() {};
 
-      var data = {punched:item.checked};
-      
-      Utils.apiCall('PUT', settings.itemAPICall + '/' + id, data, callBack, errorCallBack, settings.apiToken );       
+    if(settings.itemAPICall) {
+      confirmAction = function() {
+        var callBack = function(data) {
+          var task = standardizeItem(data);
+          item.checked = task.punched;
+          workingEnd();        
+        };
+
+        var errorCallBack = function (data) {
+          console.error(data);      
+          item.checked = !item.checked;
+          workingEnd();
+        };
+
+        var data = {punched:item.checked};
+        
+        Utils.apiCall('PUT', settings.itemAPICall + '/' + id, data, callBack, errorCallBack, settings.apiToken );       
+      };
+    } 
+
+    if(settings.confirmCheck) {
+      callModalConfirm('Do you want to change task status?', confirmAction, cancelAction);
+    } else {
+      confirmAction();
     }
+
   }; 
   
   var createInputText = function (id) {
@@ -664,6 +749,7 @@
       mainContainer.addEventListener('keypress', keyPressEventHandler, false);
       mainContainer.addEventListener('change', selectEventHandler, true); 
       working = mainContainer.querySelector('#'+ selectorsIds.punchListWorking);
+      modal = mainContainer.querySelector('#'+ selectorsIds.punchListModal);
       // Populate the punch list
       populatePunchList();
     } else {
