@@ -597,8 +597,10 @@
   var removeItemComment = function(item) {
     // Search for the item parent
     var id = item.getAttribute('data-id');
-    
+
     var punchItemComment = punchListItems.querySelector('#' + selectorsIds.punchListComment + id);
+    var itemId = punchItemComment.closest('.punchlist-item-container').getAttribute('data-id');; 
+
     
     if(settings.commentAPICall) {
       
@@ -607,7 +609,7 @@
       var callBack = function(data) {
         punchItemComment.remove();
         workingEnd();
-        updateCommentCount(id);
+        updateCommentCount(itemId);
       }
 
       var errorCallBack = function (data) {
@@ -618,7 +620,7 @@
       Utils.apiCall('DELETE', settings.commentAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken );       
     } else {      
       punchItemComment.remove();
-      updateCommentCount(id);
+      updateCommentCount(itemId);
     }
   };     
   //
