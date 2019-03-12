@@ -1,8 +1,9 @@
 {
   "name": "punchlist",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Punch List JQueryLess",
   "scripts": {
+    "dev": "copyfiles -u 3 node_modules/autosize/dist/autosize.js src/",
     "build": "npm run buildMin && npm run buildDist && npm run buildExample",
     "buildMin": "webpack",
     "buildExample": "copyfiles -u 1 dist/*.js example/js && copyfiles -u 1 dist/*.css example/css",
@@ -23,9 +24,11 @@
   },
   "homepage": "https://github.com/gabwagner/punchListJQueryLess#readme",
   "devDependencies": {
-    "express": "^4.16.4",
-    "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3",
-    "copyfiles": "^2.1.0"
+    "copyfiles": "^2.1.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "autosize": "^4.0.2"
   }
 }

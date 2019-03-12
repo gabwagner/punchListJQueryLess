@@ -84,37 +84,42 @@
     // Template of the tags in the item 
     punchListItemTagsTemplate: (tag) =>  `<div class="punchlist-item-tag"><b>${tag.name}</b>: ${tag.value}</div>`,
     // Template of the item of the punch list
-    punchListItemTemplate: (item) =>  `<div class="punchlist-item-container" id="${ selectorsIds.punchListItem + item.id}" data-id="${item.id}">
-    <div class="punchlist-item">
-    <div class="punchlist-item-label">
-    <input type="checkbox" id="check-punch-item-${item.id}" ${item.punched ? 'checked': ''} data-id="${item.id}" data-action="punchlist-item-action-checked"/>
-    <label for="check-punch-item-${item.id}" class="punchlist-item-label-text">
-    <i class="fa fa-check"></i> 
-    <span class="punchlist-item-label-text-line">
-    <span class="punchlist-item-label-text-data" id="${selectorsIds.punchListItemText +item.id}">${item.task}</span>
-    </span>
-    </label>
-    </div>
-    <div class="punchlist-item-action comment" title="comments" data-action="punchlist-item-action-comment" data-id="${item.id}">
-    <div class="fa-stack fa-xs" data-action="punchlist-item-action-comment" data-id="${item.id}">
-    <i class="fa fa-comment fa-stack-2x punchlist-item-action-comment"></i>
-    <span class="fa fa-stack-1x fa-inverse" data-action="punchlist-item-action-comment" id="${selectorsIds.punchListCommentCount + item.id}" data-id="${item.id}">${(item.comments) ? item.comments.length:'0'}</span>
-    </div>
-    </div>
-    <div class="punchlist-item-action" title="remove" data-action="punchlist-item-action-remove" data-id="${item.id}">
-    <i class="fa fa-times-circle punchlist-item-action-remove" data-action="punchlist-item-action-remove" data-id="${item.id}"></i>
-    </div>
-    </div>
-    <div class="punchlist-item-tags">
-    ${(item.tags)?item.tags.map(templates.punchListItemTagsTemplate).join(''):''}
-    </div>
-    <div class="punch-list-comments hidden" id="${selectorsIds.punchListComments + item.id}">
-    ${(item.comments) ? item.comments.map(templates.punchListCommentTemplate).join(''):''}
-    </div>
-    <div class="punchlist-item-comment-action-add" data-id="${item.id}" data-action="punchlist-item-comment-action-add">
-    <i class="fa fa-plus"></i>
-    Add Comment
-    </div>
+    punchListItemTemplate: (item) =>  `
+    <div class="punchlist-item-container" id="${ selectorsIds.punchListItem + item.id}" data-id="${item.id}">
+      <input type="checkbox" id="check-punch-item-${item.id}" ${item.punched ? 'checked': ''} data-id="${item.id}" data-action="punchlist-item-action-checked"/>    
+      <div class="punchlist-item">
+        <div class="punchlist-item-label">
+          <label for="check-punch-item-${item.id}" class="punchlist-item-label-text">
+            <i class="fa fa-check"></i> 
+            <span class="punchlist-item-label-text-line">
+              <span class="punchlist-item-label-text-data" id="${selectorsIds.punchListItemText + item.id}">
+              ${item.task}
+              </span>
+            </span>
+          </label>
+        </div>
+        <div class="punchlist-item-action" title="edit" data-action="punchlist-item-action-edit" data-id="${item.id}">
+          <i class="fas fa-pen punchlist-item-action-edit" data-action="punchlist-item-action-edit" data-id="${item.id}"></i>
+        </div>
+        <div class="punchlist-item-action comment" title="comments" data-action="punchlist-item-action-comment" data-id="${item.id}">
+          <div class="fa-stack fa-xs" data-action="punchlist-item-action-comment" data-id="${item.id}">
+            <i class="fa fa-comment fa-stack-2x punchlist-item-action-comment"></i>
+            <span class="fa fa-stack-1x fa-inverse" data-action="punchlist-item-action-comment" id="${selectorsIds.punchListCommentCount + item.id}" data-id="${item.id}">${(item.comments) ? item.comments.length:'0'}</span>
+          </div>
+        </div>
+        <div class="punchlist-item-action" title="remove" data-action="punchlist-item-action-remove" data-id="${item.id}">
+          <i class="fa fa-times-circle punchlist-item-action-remove" data-action="punchlist-item-action-remove" data-id="${item.id}"></i>
+        </div>
+      </div>
+      <div class="punchlist-item-tags">
+        ${(item.tags)?item.tags.map(templates.punchListItemTagsTemplate).join(''):''}
+      </div>
+      <div class="punch-list-comments hidden" id="${selectorsIds.punchListComments + item.id}">
+        ${(item.comments) ? item.comments.map(templates.punchListCommentTemplate).join(''):''}
+      </div>
+      <div class="punchlist-item-comment-action-add" data-id="${item.id}" data-action="punchlist-item-comment-action-add">
+        <i class="fa fa-plus"></i> Add Comment
+      </div>
     </div>`,
   };
   
@@ -144,10 +149,10 @@
     projectId: null,
     // Set confirmation when setting a task as done
     confirmCheck: true,
-    // Set confirmation when setting a task as not done    
-    confirmUnCheck: true,
     // Set confirmation before deleting an item
     confirmDeleteItem: true,
+    // Set confirmation before deleting a comment
+    confirmDeleteComment: true,    
   };
   //
   // Methods
@@ -429,11 +434,19 @@
 
   }; 
   
-  var createInputText = function (id) {
-    var input = document.createElement('input');
-    input.type = 'text';
+  var createInputText = function (id, value, maxLength) {
+    var input = document.createElement('textarea');
     input.id = id;
-    input.style.width = '100%';    
+    input.spellcheck=true;
+    if(value) {
+      input.value = value;
+    }
+    if(maxLength) {
+      input.setAttribute('maxlength', maxLength);
+    }
+    input.style.width = '100%';
+    input.addEventListener('keydown', keyPressEventHandler, false);
+    autosize(input);
     return input;
   };
   /**
@@ -510,12 +523,73 @@
     }    
   };    
   /**
+  * Edit item 
+  * @private
+  */
+  var editItem = function(item) {    
+    var id = item.getAttribute('data-id');
+    var itemText = mainContainer.querySelector('#' + selectorsIds.punchListItemText + id);
+    var value = itemText.innerHTML.trim();
+    // Create new input
+    var input = createInputText('punch-item-edit-input', value, 255);
+    input.setAttribute('data-id',id);
+    // Add the blur event to calll when losing focus
+    input.addEventListener('blur', addEventHandler, false);
+    input.setAttribute('data-old', value);
+    itemText.innerHTML = '';
+    itemText.append(input);
+    // Set focus on the input
+    input.focus();
+  };  
+  /**
+  * Edit item 
+  * @private
+  */
+  var undoEdit = function(item) {    
+    var id = item.getAttribute('data-id');
+    var itemText = mainContainer.querySelector('#' + selectorsIds.punchListItemText + id);
+    itemText.innerHTML = item.getAttribute('data-old');
+  };  
+  /**
+  * Edit item action
+  * @private
+  *  @param {HtmlElemet} HtmlElement that is the target of text
+  */
+  var editItemAction = function(item) {    
+
+    var id = item.getAttribute('data-id');
+
+    var itemText = mainContainer.querySelector('#' + selectorsIds.punchListItemText + id);
+
+
+    if(settings.itemAPICall) {
+      var callBack = function(data) {
+        var task = standardizeItem(data);
+        itemtText.innerHTML = task.title;
+        workingEnd();        
+      };
+
+      var errorCallBack = function (data) {
+        console.error(data);      
+        itemtText.innerHTML = item.getAttribute('data-old');
+        workingEnd();
+      };
+
+      var data = {title:item.value};
+      
+      Utils.apiCall('PUT', settings.itemAPICall + '/' + id, data, callBack, errorCallBack, settings.apiToken );       
+    } else {
+      itemText.innerHTML = item.value;
+    }
+  }; 
+  /**
   * Add new comment to an item
   * @private
   * @param {HtmlElemet} HtmlElement that is the target of the click  
   */
   var addNewItemComment = function(item) {
     var id = item.getAttribute('data-id');
+
     var comments = punchListItems.querySelector('#'+ selectorsIds.punchListComments + id);
     // Create new comment
     var newComment = {id: newIdItem, comment:'', tags:[]};
@@ -599,29 +673,46 @@
     var id = item.getAttribute('data-id');
 
     var punchItemComment = punchListItems.querySelector('#' + selectorsIds.punchListComment + id);
+
     var itemId = punchItemComment.closest('.punchlist-item-container').getAttribute('data-id');; 
 
-    
-    if(settings.commentAPICall) {
-      
-      workingStart();
 
-      var callBack = function(data) {
-        punchItemComment.remove();
-        workingEnd();
-        updateCommentCount(itemId);
-      }
 
-      var errorCallBack = function (data) {
-        console.error(data);      
-        workingEnd();
-      }         
-      
-      Utils.apiCall('DELETE', settings.commentAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken );       
-    } else {      
+    var confirmAction = function() {
       punchItemComment.remove();
       updateCommentCount(itemId);
+    };
+
+    var cancelAction = null;
+
+    if(settings.commentAPICall) {
+      
+      confirmAction = function() {
+        workingStart();
+        
+        var callBack = function(data) {
+          punchItemComment.remove();
+          updateCommentCount(itemId);
+          workingEnd();
+        };
+              
+        var errorCallBack = function (data) {
+          
+          console.error(data);      
+          workingEnd();
+          
+        };
+
+        Utils.apiCall('DELETE', settings.commentAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken ); 
+      }      
     }
+
+    if(settings.confirmDeleteItemComment) {
+      callModalConfirm('Do you want to remove this comment?', confirmAction, cancelAction);
+    } else {
+      confirmAction();
+    } 
+
   };     
   //
   // Events
@@ -653,6 +744,10 @@
         case 'punchlist-item-action-add':
           addNewItem();
           break;
+        //  When the action came from the add item link        
+        case 'punchlist-item-action-edit':
+          editItem(event.target);
+          break;          
         //  When the action came from the add comment link        
         case 'punchlist-item-comment-action-add':
           addNewItemComment(event.target);
@@ -680,6 +775,9 @@
         case 'punch-comment-input-text':
           addNewItemCommentAction(event.target);
           break;         
+        case 'punch-item-edit-input':
+          editItemAction(event.target);
+          break;          
       }
     }
   };   
@@ -721,8 +819,17 @@
         // Remove Listener to avoid problem with none existing object because it will delete de input
         event.target.removeEventListener('blur', addEventHandler, false);
         addNewItemCommentAction(event.target);
+      case 'punch-item-edit-input':
+        // Remove Listener to avoid problem with none existing object because it will delete de input
+        event.target.removeEventListener('blur', addEventHandler, false);
+        editItemAction(event.target);        
       break;          
       }    
+    } else if (key === 27) {
+      var id = event.target.getAttribute('id');
+      if(id == 'punch-item-edit-input') {
+        undoEdit(event.target);
+      }
     }
   };
   //
@@ -740,7 +847,6 @@
     // @todo Undo any other init functions...
     // Remove event listeners
     mainContainer.removeEventListener('click', clickEventHandler, false);
-    mainContainer.removeEventListener('keypress', keyPressEventHandler, false);
     mainContainer.removeEventListener('change', selectEventHandler, true); 
     // Reset variables
     settings = null;
@@ -769,7 +875,6 @@
       punchListItems = mainContainer.querySelector('#' + selectorsIds.punchListItems );
       // Set the events handler 
       mainContainer.addEventListener('click', clickEventHandler, false);
-      mainContainer.addEventListener('keypress', keyPressEventHandler, false);
       mainContainer.addEventListener('change', selectEventHandler, true); 
       working = mainContainer.querySelector('#'+ selectorsIds.punchListWorking);
       modal = mainContainer.querySelector('#'+ selectorsIds.punchListModal);
