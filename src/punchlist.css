@@ -91,8 +91,8 @@
 }
 
 .punchlist-item-action {
-  flex-basis: 22px;
-  width:22px;
+  flex-basis: 30px;
+  width:30px;
   text-align:center;
   color:#d8d8d8;
   opacity:0;
@@ -100,6 +100,18 @@
   margin-right: 5px;
   height:37px;
   cursor: pointer;
+}
+
+.punchlist-item-action-remove {
+  font-size:22px;
+}
+
+.punchlist-item-action.comment {
+  font-size: 0.99rem;
+}
+
+.punchlist-item-action .fa-inverse {
+  font-family:helvetica neue,helvetica,arial,sans-serif;  
 }
 
 .punchlist-item input[type="checkbox"]{

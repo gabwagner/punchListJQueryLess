@@ -40,6 +40,7 @@
       punchListModalText: 'punch-modal-text',
       punchListModalActionOk: 'punch-modal-action-ok',
       punchListModalActionCancel: 'punch-modal-action-cancel',
+      punchListCommentCount: 'punchlist-comment-count-',
   };
   
   // Templates used on Punch List
@@ -94,8 +95,11 @@
     </span>
     </label>
     </div>
-    <div class="punchlist-item-action" title="comments" data-action="punchlist-item-action-comment" data-id="${item.id}">
-    <i class="fa fa-comment punchlist-item-action-comment" data-action="punchlist-item-action-comment" data-id="${item.id}"></i>
+    <div class="punchlist-item-action comment" title="comments" data-action="punchlist-item-action-comment" data-id="${item.id}">
+    <div class="fa-stack fa-xs" data-action="punchlist-item-action-comment" data-id="${item.id}">
+    <i class="fa fa-comment fa-stack-2x punchlist-item-action-comment"></i>
+    <span class="fa fa-stack-1x fa-inverse" data-action="punchlist-item-action-comment" id="${selectorsIds.punchListCommentCount + item.id}" data-id="${item.id}">${(item.comments) ? item.comments.length:'0'}</span>
+    </div>
     </div>
     <div class="punchlist-item-action" title="remove" data-action="punchlist-item-action-remove" data-id="${item.id}">
     <i class="fa fa-times-circle punchlist-item-action-remove" data-action="punchlist-item-action-remove" data-id="${item.id}"></i>
@@ -193,6 +197,12 @@
     }    
       
   }  
+  var updateCommentCount = function(itemId) {
+    var comments = punchListItems.querySelector('#' + selectorsIds.punchListComments + itemId);
+    var commentCount = punchListItems.querySelector('#' + selectorsIds.punchListCommentCount + itemId);
+    var count = comments.querySelectorAll('.punchlist-comment').length;
+    commentCount.innerHTML = count;
+  }
   /**
   * Creates the primary container where the list will be added.
   * Also set the css class for it
@@ -539,19 +549,27 @@
     var newTaskComment = item.value;
     // Check if the input is not empty. 
     if (newTaskComment.length > 0) {
+
       if(settings.commentAPICall) {
+
         workingStart();
 
         var callBack = function(data) {
+
           var comment = standardizeComment(data);
 
           var comments = punchListItems.querySelector('#'+ selectorsIds.punchListComments + id);
+          
           var newCommentHtml = Utils.map([comment], templates.punchListCommentTemplate).join('');
           // Remove item where input was
           newComment.remove();
           // Add new item
           comments.innerHTML = newCommentHtml + comments.innerHTML;
-          workingEnd();        
+
+          workingEnd();
+
+          updateCommentCount(id);
+
         }
         
         var errorCallBack = function (data) {
@@ -565,6 +583,7 @@
         Utils.apiCall('POST', settings.commentAPICall, data, callBack, errorCallBack, settings.apiToken );       
       } else {
         item.parentNode.innerHTML = newTaskComment;
+        updateCommentCount(id);
       }      
     } else {
       newComment.remove();
@@ -587,7 +606,8 @@
 
       var callBack = function(data) {
         punchItemComment.remove();
-        workingEnd();        
+        workingEnd();
+        updateCommentCount(id);
       }
 
       var errorCallBack = function (data) {
@@ -598,6 +618,7 @@
       Utils.apiCall('DELETE', settings.commentAPICall + '/' + id, null, callBack, errorCallBack, settings.apiToken );       
     } else {      
       punchItemComment.remove();
+      updateCommentCount(id);
     }
   };     
   //
