@@ -23,6 +23,8 @@
   var working;
   // Modal Cache
   var modal;
+  // Data To Export
+  var exportData;
   
   const newIdItem = 'new';
 
@@ -73,7 +75,8 @@
       <i class="fa fa-plus"></i>
       Add an Item
     </div>        
-    </div>`,       
+    </div>
+    <a id="punchListExportData" style="display:none"></a>`,       
     // Template of the tags in the comment 
     punchListCommentTagsTemplate: (tag) =>  `<b>${tag.name}</b>: ${tag.value}`,
     // Template of the comments 
@@ -557,6 +560,8 @@
   */
   var editItemAction = function(item) {    
 
+    workingStart();        
+
     var id = item.getAttribute('data-id');
 
     var itemText = mainContainer.querySelector('#' + selectorsIds.punchListItemText + id);
@@ -565,13 +570,13 @@
     if(settings.itemAPICall) {
       var callBack = function(data) {
         var task = standardizeItem(data);
-        itemtText.innerHTML = task.title;
+        itemText.innerHTML = task.task;
         workingEnd();        
       };
 
       var errorCallBack = function (data) {
         console.error(data);      
-        itemtText.innerHTML = item.getAttribute('data-old');
+        itemText.innerHTML = item.getAttribute('data-old');
         workingEnd();
       };
 
@@ -707,7 +712,7 @@
       }      
     }
 
-    if(settings.confirmDeleteItemComment) {
+    if(settings.confirmDeleteComment) {
       callModalConfirm('Do you want to remove this comment?', confirmAction, cancelAction);
     } else {
       confirmAction();
@@ -811,23 +816,28 @@
       var id = event.target.getAttribute('id');
       switch(id) {
         case 'punch-item-text-input':
+          event.target.disabled = true;
           // Remove Listener to avoid problem with none existing object because it will delete de input
           event.target.removeEventListener('blur', addEventHandler, false);
           addNewItemAction(event.target);
         break;
       case 'punch-comment-input-text':
+        event.target.disabled = true;
         // Remove Listener to avoid problem with none existing object because it will delete de input
         event.target.removeEventListener('blur', addEventHandler, false);
         addNewItemCommentAction(event.target);
       case 'punch-item-edit-input':
         // Remove Listener to avoid problem with none existing object because it will delete de input
         event.target.removeEventListener('blur', addEventHandler, false);
+        event.target.disabled = true;        
         editItemAction(event.target);        
       break;          
       }    
     } else if (key === 27) {
       var id = event.target.getAttribute('id');
       if(id == 'punch-item-edit-input') {
+        event.target.removeEventListener('blur', addEventHandler, false);
+        event.target.disabled = true;
         undoEdit(event.target);
       }
     }
@@ -954,6 +964,37 @@
     } else {
       punchListItems.innerHTML = '';
     }
+  };
+
+  punchList.export = function () {
+    if ( !settings ) return;
+    // Will only be called if the fillDataCall is added
+    if(settings.projectAPICall) {
+      
+      var projectsInput = mainContainer.querySelector('#' + selectorsIds.punchListProjects);
+      
+      projectId = projectsInput.value;
+      
+      workingStart();
+      
+      var callBack = function (data) {
+
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+        var dlAnchorElem = document.getElementById('punchListExportData');
+        dlAnchorElem.setAttribute("href",     dataStr     );
+        dlAnchorElem.setAttribute("download", "punchlist.json");
+        dlAnchorElem.click();
+        workingEnd(); 
+      }
+      
+      var errorCallBack = function (data) {
+        console.error(data);
+        workingEnd();        
+      }
+
+      Utils.apiCall('GET', settings.projectAPICall + '/' + projectId, null, callBack, errorCallBack, settings.apiToken );
+    }
+
   };
 
   return punchList;

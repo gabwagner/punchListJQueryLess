@@ -1,6 +1,6 @@
 {
   "name": "punchlist",
-  "version": "1.0.9",
+  "version": "1.0.11",
   "description": "Punch List JQueryLess",
   "scripts": {
     "dev": "copyfiles -u 3 node_modules/autosize/dist/autosize.js src/",
