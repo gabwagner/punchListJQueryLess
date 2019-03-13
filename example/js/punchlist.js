@@ -826,12 +826,13 @@
         // Remove Listener to avoid problem with none existing object because it will delete de input
         event.target.removeEventListener('blur', addEventHandler, false);
         addNewItemCommentAction(event.target);
+        break;
       case 'punch-item-edit-input':
         // Remove Listener to avoid problem with none existing object because it will delete de input
         event.target.removeEventListener('blur', addEventHandler, false);
         event.target.disabled = true;        
         editItemAction(event.target);        
-      break;          
+        break;          
       }    
     } else if (key === 27) {
       var id = event.target.getAttribute('id');
